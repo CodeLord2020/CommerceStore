@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ecommerce-core.onrender.com' , 'localhost' , '127.0.0.1']
+ALLOWED_HOSTS = ['ecommerce-core-8i49.onrender.com' , 'localhost' , '127.0.0.1']
 
 AUTH_USER_MODEL = 'accounts.User'
 
