@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import cloudinary
 from pathlib import Path
 from decouple import config
 import os
@@ -41,7 +41,8 @@ DJANGO_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "accounts",
-    "products"
+    "products",
+    "cloud_resource"
 ]
 
 THIRD_PARTY_APPS = [
@@ -51,7 +52,9 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-
+    'django_filters',
+    'cloudinary_storage',
+    'cloudinary',
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS
 
@@ -119,16 +122,16 @@ WSGI_APPLICATION = "ecommerce_core.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
 # DATABASES = {
-#     'default': dj_database_url.parse(config('DATABASE_URL'))
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
 # }
+# DATABASES["default"] = dj_database_url.parse(config("DATABASE_URL"))
+DATABASES = {
+    'default': dj_database_url.parse(config('DATABASE_URL'))
+}
 
 
 REST_FRAMEWORK = {
@@ -245,3 +248,9 @@ EMAIL_PORT = config("EMAIL_PORT")
 EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 EMAIL_USE_SSL = config("EMAIL_USE_SSL")
+
+cloudinary.config(
+    cloud_name=config('CLOUD_NAME'),
+    api_key=config("API_KEY"),
+    api_secret=config("API_SECRET"),
+)

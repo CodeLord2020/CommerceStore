@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import *
 from .serializers import *
 import re
 from django.contrib.auth import authenticate
@@ -169,3 +169,22 @@ class UserCompleteInfo(serializers.ModelSerializer):
             'created_at',
             'last_login',
         )
+
+
+
+class VendorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vendor
+        fields = '__all__'
+        read_only_fields = ['id', 'user']
+
+    def create(self, validated_data):
+        # Ensure the user can only create a Vendor instance if they're not already a vendor
+        user = self.context['request'].user
+        if hasattr(user, 'vendor'):
+            raise serializers.ValidationError("User is already a vendor.")
+        
+        vendor = Vendor.objects.create(user=user, **validated_data)
+        user.is_vendor = True
+        user.save()
+        return vendor

@@ -46,8 +46,9 @@ urlpatterns = [
     path('', schema_view.with_ui('swagger', cache_timeout=0),
           name='schema-swagger-ui'),
     path("admin/", admin.site.urls),
-    path("api/", include("accounts.urls")),
-    path("api/", include("products.urls"))
+    path("auth/", include("accounts.urls")),
+    path("api/", include("products.urls")),
+    path("resource/", include("cloud_resource.urls"))
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

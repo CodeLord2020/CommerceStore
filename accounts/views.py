@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .utils import *
-from .models import User, UserContactInfo, Token
+from .models import User, Vendor, Token
 from django.db import transaction
 from django.conf import settings
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
@@ -12,6 +12,8 @@ from .tokens import create_jwt_pair_for_user
 from rest_framework.request import Request
 from rest_framework.response import Response
 # Create your views here.
+from rest_framework import viewsets, permissions
+from rest_framework.exceptions import PermissionDenied
 from django.contrib.auth import get_user_model
 
 
@@ -269,3 +271,30 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserCompleteInfoSerilaizer
     queryset = get_user_model().objects.filter(is_staff=False)
     permission_classes = (IsAdminUser,)
+
+
+
+class VendorViewSet(viewsets.ModelViewSet):
+    queryset = Vendor.objects.all()
+    serializer_class = VendorSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Restrict access to the user's own vendor profile
+        return self.queryset.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        # Ensure a vendor can only update their own profile
+        vendor = self.get_object()
+        if vendor.user != self.request.user:
+            raise PermissionDenied("You do not have permission to edit this vendor profile.")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        # Ensure a vendor can only delete their own profile
+        if instance.user != self.request.user:
+            raise PermissionDenied("You do not have permission to delete this vendor profile.")
+        instance.delete()

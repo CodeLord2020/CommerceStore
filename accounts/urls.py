@@ -1,8 +1,15 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
+from rest_framework.routers import DefaultRouter
+from .views import VendorViewSet
 
+
+
+router = DefaultRouter()
+router.register(r'vendors', VendorViewSet, basename='vendor')
 
 urlpatterns = [
+    path('', include(router.urls)),
     path('auth/register/', views.UserRegistration.as_view() , name= 'register'),
     path('auth/verify_account/', views.VerifyUserEmail.as_view(), name = 'verify-email-view'),
     path('auth/login/', views.LoginView.as_view(), name='login_view'),
